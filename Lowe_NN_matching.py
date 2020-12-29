@@ -1,12 +1,13 @@
 from sift import SIFT
 from skimage.io import imread
 import numpy as np
-from nearest_neighbors_matching import NN_im1_im2
+from nearest_neighbors_matching import NN_im1_im2, keypoints_to_frames
+import cv2 as cv
 import matplotlib.pyplot as plt
 
 def Lowe_NN(frames1, descrs1, descrs2, matches):
     N_frames1 = frames1.shape[0]
-    NN_threshold = 0.9
+    NN_threshold = 0.8
     ratio=np.zeros((N_frames1,1))
     for i in range(N_frames1):
         NN1_arg=np.argmin(np.sqrt(np.sum((descrs2-descrs1[i])**2,axis=1)))
@@ -31,17 +32,27 @@ def plot_NN_Lowe(filtered_matches, im1, im2, frames1, frames2):
 def main_Lowe_NN():
 
     # loading images
+    img1 = imread('all_souls_000002.jpg')
+    img2 = imread('all_souls_000015.jpg')
+
     im1 = imread('all_souls_000002.jpg')
     im2 = imread('all_souls_000015.jpg')
 
 
-    sift_detector_1 = SIFT(im1)
-    descrs1 = sift_detector_1.get_features()[0]
-    frames1 = sift_detector_1.kp_pyr[0]
+    # sift_detector_1 = SIFT(im1)
+    # descrs1 = sift_detector_1.get_features()[0]
+    # frames1 = sift_detector_1.kp_pyr[0]
 
-    sift_detector_2 = SIFT(im2)
-    descrs2 = sift_detector_2.get_features()[0]
-    frames2 = sift_detector_2.kp_pyr[0]
+    # sift_detector_2 = SIFT(im2)
+    # descrs2 = sift_detector_2.get_features()[0]
+    # frames2 = sift_detector_2.kp_pyr[0]
+
+    sift = cv.SIFT_create()
+    keypoints1, descrs1 = sift.detectAndCompute(im1,None)
+    keypoints2, descrs2 = sift.detectAndCompute(im2,None)
+
+    frames1 = keypoints_to_frames(keypoints1)
+    frames2 = keypoints_to_frames(keypoints2)
 
     # matches
     matches = NN_im1_im2(frames1, descrs1, descrs2)
@@ -50,6 +61,6 @@ def main_Lowe_NN():
     filtered_matches = Lowe_NN(frames1, descrs1, descrs2, matches)
 
     # plot
-    plot_NN_Lowe(filtered_matches, im1, im2, frames1, frames2)
+    plot_NN_Lowe(filtered_matches, img1, img2, frames1, frames2)
 
 print(main_Lowe_NN())

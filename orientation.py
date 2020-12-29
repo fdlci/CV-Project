@@ -57,15 +57,13 @@ def assign_orientation(kps, octave, num_bins=36):
         for oy in range(-w, w+1):
             for ox in range(-w, w+1):
                 x, y = cx+ox, cy+oy
+                if x >= 0 and x < octave.shape[1]-1 and y >= 0 and y < octave.shape[0]-1:
                 
-                if x < 0 or x > octave.shape[1]-1: continue
-                elif y < 0 or y > octave.shape[0]-1: continue
-                
-                m, theta = get_grad(L, x, y)
-                weight = kernel[oy+w, ox+w] * m
+                    m, theta = get_grad(L, x, y)
+                    weight = kernel[oy+w, ox+w] * m
 
-                bin = quantize_orientation(theta, num_bins)
-                hist[bin] += weight
+                    bin = quantize_orientation(theta, num_bins)
+                    hist[bin] += weight
 
         max_bin = np.argmax(hist)
         new_kps.append([kp[0], kp[1], kp[2], fit_parabola(hist, max_bin, bin_width)])

@@ -2,9 +2,10 @@ from sift import SIFT
 from skimage.io import imread
 import numpy as np
 from nearest_neighbors_matching import NN_im1_im2
+import cv2 as cv
 import matplotlib.pyplot as plt
 
-def ransac(frames1,frames2,matches,N_iters=1000,dist_thresh=15):
+def ransac(frames1,frames2,matches,N_iters=10000,dist_thresh=15):
     # initialize
     max_inliers=0
     tnf=None
@@ -43,6 +44,15 @@ def ransac(frames1,frames2,matches,N_iters=1000,dist_thresh=15):
 
     return (tnf,best_inliers_indices)
 
+def keypoints_to_frames(keypoints):
+    frames = np.zeros((len(keypoints),4))
+    for i, keyp in enumerate(keypoints):
+        # print(keyp.pt)
+        frames[i,0], frames[i,1] = keyp.pt[0], keyp.pt[1]
+        frames[i,2] = keyp.size
+        frames[i,3] = keyp.angle
+    return frames
+
 def plot_geom(filtered_matches, im1, im2, frames1, frames2):
     plt.figure()
     plt.imshow(np.concatenate((im1,im2),axis=1))
@@ -56,16 +66,27 @@ def plot_geom(filtered_matches, im1, im2, frames1, frames2):
 def main_geom():
 
     # loading images
+    img1 = imread('all_souls_000002.jpg')
+    img2 = imread('all_souls_000015.jpg')
+
     im1 = imread('all_souls_000002.jpg')
     im2 = imread('all_souls_000015.jpg')
 
-    sift_detector_1 = SIFT(im1)
-    descrs1 = sift_detector_1.get_features()[0]
-    frames1 = sift_detector_1.kp_pyr[0]
 
-    sift_detector_2 = SIFT(im2)
-    descrs2 = sift_detector_2.get_features()[0]
-    frames2 = sift_detector_2.kp_pyr[0]    
+    # sift_detector_1 = SIFT(im1)
+    # descrs1 = sift_detector_1.get_features()[0]
+    # frames1 = sift_detector_1.kp_pyr[0]
+
+    # sift_detector_2 = SIFT(im2)
+    # descrs2 = sift_detector_2.get_features()[0]
+    # frames2 = sift_detector_2.kp_pyr[0]
+
+    sift = cv.SIFT_create()
+    keypoints1, descrs1 = sift.detectAndCompute(im1,None)
+    keypoints2, descrs2 = sift.detectAndCompute(im2,None)
+
+    frames1 = keypoints_to_frames(keypoints1)
+    frames2 = keypoints_to_frames(keypoints2) 
 
     # matches
     matches = NN_im1_im2(frames1, descrs1, descrs2)
@@ -75,6 +96,6 @@ def main_geom():
     filtered_matches = matches[inliers_indices,:]
 
     # plot
-    plot_geom(filtered_matches, im1, im2, frames1, frames2)
+    plot_geom(filtered_matches, img1, img2, frames1, frames2)
 
 print(main_geom())
