@@ -1,14 +1,15 @@
 from skimage.io import imread
 import matplotlib.pyplot as plt
 from sift import SIFT
+import numpy as np
 
 if __name__ == '__main__':
 
     im = imread('all_souls_000002.jpg')
-
     sift_detector = SIFT(im)
     feat = sift_detector.get_features()
     kp_pyr = sift_detector.kp_pyr
+    print(kp_pyr[1][0], kp_pyr[2][0], kp_pyr[3][0])
 
     _, ax = plt.subplots(1, sift_detector.num_octave)
 
