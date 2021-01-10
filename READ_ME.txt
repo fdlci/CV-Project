@@ -7,8 +7,8 @@ quasiment pas de modifications.
 3. Dans le notebook sift_by_hand, il y a quasiment les 3 premières parties du sift. Je voulais 
 pour la partie orientation ne pas coder la parabole. Ca ne me parait pas indispensable. On peut faire
 une légère simplification.
-J'ai un porblème d'indices dans la méthode que j'implémente et je n'arrives pas à trouver l'erreur. Dans 
-l'algo sur internet il fait des trucs bizarres avec les indices (x,y) qu'il échange un peu partout.
+Je suis sure par contre qu'il y a un problème avec les valeurs de l'orientation et de la valeur du rayon.
+Je ne sais pas trop comment faire.
 
 4. Le notebook project.ipynb montre l'implémentation des keypoints avec le harris detector. Ce que je ne comprends
 pas c'est que même si on a des keypoints pour les images de taille divisée par 2 à chaque fois, on n'a quand même

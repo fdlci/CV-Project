@@ -74,5 +74,4 @@ def assign_orientation(kps, octave, num_bins=36):
 
             if .8 * max_val <= val:
                 new_kps.append([kp[0], kp[1], kp[2], fit_parabola(hist, binno, bin_width)])
-        print(new_kps[0])
     return np.array(new_kps)
